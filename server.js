@@ -5,12 +5,17 @@ let autoIterator = 1;
 
 const db = path.join(__dirname, "/db/db.json");
 
+console.log(db);
+
 //a process for reading the JSON file containing the array of existing note.
-const dbRead = JSON.parse(
+const dbRead =()=>{
   fs.readFileSync(db, (err, data) => {
     if (err) throw err;
   })
-);
+;
+
+}
+ 
 
 //a function that reads the existing json file (using the above process), filteres out any "null"s, and writes the filtered array back to the json
 const dbWrite = dbRead => {
@@ -57,9 +62,23 @@ app.post("/api/notes", (req, res) => {
   let newNote = req.body;
   newNote.id = autoIterator;
   autoIterator++;
-  dbRead.push(newNote);
-  dbWrite(dbRead);
-  return res.json(dbRead);
+  // dbRead.push(newNote);
+  // dbWrite(dbRead);
+  // return res.json(dbRead);
+
+  fs.writeFile("/db/db.json",newNote, function(err) 
+{
+
+  // If the code experiences any errors it will log the error to the console.
+  if (err) {
+    return console.log(err);
+  }
+
+  // Otherwise, it will print: "movies.txt was updated!"
+  console.log("movies.txt was updated!");
+
+});
+
 });
 
 //the process for deleting a note by note id. Since the notes have id's starting with 1, but the json file is an array (so starting at index 0), the deleted note is actually set to id-1 - to correspond to the way they are stored in the json array
