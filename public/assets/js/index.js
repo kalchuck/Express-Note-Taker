@@ -1,8 +1,10 @@
+console.log("javascript loaded")
 var $noteTitle = $(".note-title");
 var $noteText = $(".note-textarea");
 var $saveNoteBtn = $(".save-note");
 var $newNoteBtn = $(".new-note");
 var $noteList = $(".list-container .list-group");
+
 
 // activeNote is used to keep track of the note in the textarea
 var activeNote = {};
@@ -55,8 +57,9 @@ var handleNoteSave = function() {
     title: $noteTitle.val(),
     text: $noteText.val()
   };
-
-  saveNote(newNote).then(function(data) {
+ 
+  saveNote(newNote).then(function(newNote) {
+    console.log("newNote:", newNote)
     getAndRenderNotes();
     renderActiveNote();
   });
@@ -71,11 +74,14 @@ var handleNoteDelete = function(event) {
     .parent(".list-group-item")
     .data();
 
-  if (activeNote.id === note.id) {
+    console.log("delete:", note)
+
+  var id = $(this).attr("index")
+  if (activeNote.id === id) {
     activeNote = {};
   }
 
-  deleteNote(note.id).then(function() {
+  deleteNote(id).then(function() {
     getAndRenderNotes();
     renderActiveNote();
   });
@@ -105,22 +111,23 @@ var handleRenderSaveBtn = function() {
 
 // Render's the list of note titles
 var renderNoteList = function(notes) {
+  console.log("renderlist", notes)
   $noteList.empty();
 
   var noteListItems = [];
 
   for (var i = 0; i < notes.length; i++) {
     var note = notes[i];
-    if (note != null) {
+
     var $li = $("<li class='list-group-item'>").data(note);
     var $span = $("<span>").text(note.title);
     var $delBtn = $(
-      "<i class='fas fa-trash-alt float-right text-danger delete-note'>"
+      "<i class='fas fa-trash-alt float-right text-danger delete-note' index=" + note.id + ">"
     );
 
     $li.append($span, $delBtn);
     noteListItems.push($li);
-  }}
+  }
 
   $noteList.append(noteListItems);
 };
@@ -128,6 +135,7 @@ var renderNoteList = function(notes) {
 // Gets notes from the db and renders them to the sidebar
 var getAndRenderNotes = function() {
   return getNotes().then(function(data) {
+    console.log("return from getnotes", data)
     renderNoteList(data);
   });
 };
